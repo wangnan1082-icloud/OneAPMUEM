@@ -19,9 +19,9 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "7.0"
  
 
-  s.source       = { :git => "http://EXAMPLE/OneAPMUEM.git", :tag => "#{s.version}" }
+  s.source       = { :git => "git@github.com:Sophia09/OneAPMUEM.git", :tag => "#{s.version}" }
 
-  s.vendored_framework = 'Frameworks/OneAPMUEM.framework'
+  s.vendored_framework = 'OneAPMUEM.framework'
   s.frameworks         = 'SystemConfiguration', 'CoreTelephony'
   s.libraries          = "z", "c++"
 
