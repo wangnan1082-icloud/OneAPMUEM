@@ -9,6 +9,8 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                    OneAPM UEM lib for iOS, supports armv7 armv7s i386 x86_64 arm64.
 
+                   DESC
+
   s.homepage     = "https://www.oneapm.com"
 
 
@@ -17,9 +19,10 @@ Pod::Spec.new do |s|
   s.author             = { "李赛" => "lisai@oneapm.com" }
  
   s.platform     = :ios, "7.0"
+  s.requires_arc     = true
  
 
-  s.source       = { :git => "git@github.com:Sophia09/OneAPMUEM.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/Sophia09/OneAPMUEM.git", :tag => s.version.to_s }
 
   s.vendored_framework = 'OneAPMUEM.framework'
   s.frameworks         = 'SystemConfiguration', 'CoreTelephony'
