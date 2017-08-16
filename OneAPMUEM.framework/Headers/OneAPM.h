@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM
+ 启动 OneAPM，当前版本 5.0.0.2
  
  @param token OneAPM 的授权码
  */
@@ -22,6 +22,8 @@
 + (void)setSearchKey:(NSString *)searchKey;
 
 + (void)setCustomInfo:(NSDictionary *)extra;
+
++ (NSString *)getSDKVersion;
 
 /**
  是否在控制台上显示 OneAPM 的日志
