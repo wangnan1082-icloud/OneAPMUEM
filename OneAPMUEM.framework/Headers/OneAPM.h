@@ -47,4 +47,9 @@
  */
 + (void)setHost:(NSString *)host;
 
+/**
+ OneAPM 上传数据时，禁止压缩数据
+ */
++ (void)disableZlib;
+
 @end
