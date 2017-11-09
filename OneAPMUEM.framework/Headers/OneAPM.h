@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.0.0.2
+ 启动 OneAPM，当前版本 5.3.0.0
  
  @param token OneAPM 的授权码
  */
@@ -43,9 +43,19 @@
 /**
  设置 OneAPM 服务器地址
  
- @param host OneAPM 的服务器地址
+ @param host SDK 的服务器地址
+ @param withSecurity 与服务器的通信使用 https 协议时该值为 YES，使用 http 协议时改值为 NO。根据苹果的审核要求，推荐使用 https 协议。
  */
-+ (void)setHost:(NSString *)host;
++ (void)setHost:(NSString *)host withSecurity:(BOOL)withSecurity;
+
+/**
+ 设置 OneAPM 服务器地址
+ 
+ @param host SDK 的服务器地址
+ @param port SDK 端口地址
+ @param withSecurity 与服务器的通信使用 https 协议时该值为 YES，使用 http 协议时改值为 NO。根据苹果的审核要求，推荐使用 https 协议。
+ */
++ (void)setHost:(NSString *)host port:(int)port withSecurity:(BOOL)withSecurity;
 
 /**
  OneAPM 上传数据时，禁止压缩数据

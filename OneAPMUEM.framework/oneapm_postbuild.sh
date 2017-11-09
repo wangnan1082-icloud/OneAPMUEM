@@ -17,6 +17,8 @@
 #
 # Optional:
 # DSYM_UPLOAD_URL - define this environment variable to override the OneAPM server hostname
+# ENABLE_SIMULATOR_DSYM_UPLOAD - enable automatic upload of simulator build symbols
+# ENABLE_DEBUG_DSYM_UPLOAD - enable automatic upload of debug build symbols
 
 not_in_xcode_env() {
     echo "OneAPM: $0 must be run from an XCode build"
@@ -70,8 +72,13 @@ if [ ! "$DWARF_DSYM_FOLDER_PATH" -o ! "$DWARF_DSYM_FILE_NAME" -o ! "$INFOPLIST_F
     not_in_xcode_env
 fi
 
+if [[ ! -d "${DWARF_DSYM_FOLDER_PATH}/*.dSYM" ]]; then
+    echo "OneAPM: No dSYM found"
+    exit 0
+fi
+
 if [ ! "${DSYM_UPLOAD_URL}" ]; then
-    DSYM_UPLOAD_URL="https://miv2dc.oneapm.com/mi/dc/symbol_files"
+    DSYM_UPLOAD_URL="https://miv2dc.oneapm.com/mi/dc/v2/symbol_files"
 fi
 
 #save and set IFS to only trigger on \n\b
@@ -86,24 +93,24 @@ do
   echo processing $dSYM
   DSYM_SRC="${dSYM}"
 
-  echo generating dSYM UUIDs
-  echo "DSYM_UUIDS='xcrun dwarfdump --uuid "$DSYM_SRC" | awk '{print $3 $2}' | xargs | sed 's/ /,/g' | sed 's/)/\|/g' | sed 's/(//g''"
-  DSYM_UUIDS=`xcrun dwarfdump --uuid "$DSYM_SRC" | awk '{print $3 $2}' | xargs | sed 's/ /,/g' | sed 's/)/\|/g' | sed 's/(//g'`
-  echo gathered UUID: $DSYM_UUIDS
-
-  # TODO if DSYM_UUIDS contains 'unsupported' then DSYM_UUIDS=''
-
-  # TODO: Add pid/timestamp to tmp file name
-  DSYM_TIMESTAMP=`date +%s`
-  DSYM_ARCHIVE_PATH="/tmp/${DSYM_SRC##*/}-${DSYM_TIMESTAMP}.zip"
-
-
   if [ "$EFFECTIVE_PLATFORM_NAME" == "-iphonesimulator" -a ! "$ENABLE_SIMULATOR_DSYM_UPLOAD" ]; then
     echo "OneAPM: Skipping automatic upload of simulator build symbols"
     exit 0
   fi
 
-  # TODO: Convert to function and call in background
+  if [ "$CONFIGURATION" == "Debug" -a ! "$ENABLE_DEBUG_DSYM_UPLOAD" ]; then
+    echo "OneAPM: Skipping automatic upload of debug build symbols"
+    exit 0
+  fi
+
+  echo generating dSYM UUIDs
+  echo "DSYM_UUIDS='xcrun dwarfdump --uuid "$DSYM_SRC" | awk '{print $3 $2}' | xargs | sed 's/ /,/g' | sed 's/)/\|/g' | sed 's/(//g''"
+  DSYM_UUIDS=`xcrun dwarfdump --uuid "$DSYM_SRC" | awk '{print $3 $2}' | xargs | sed 's/ /,/g' | sed 's/)/\|/g' | sed 's/(//g'`
+  echo gathered UUID: $DSYM_UUIDS
+
+  # TODO: Add pid/timestamp to tmp file name
+  DSYM_TIMESTAMP=`date +%s`
+  DSYM_ARCHIVE_PATH="/tmp/${DSYM_SRC##*/}-${DSYM_TIMESTAMP}.zip"
 
   # Loop until upload success or retry limit is exceeded
 
