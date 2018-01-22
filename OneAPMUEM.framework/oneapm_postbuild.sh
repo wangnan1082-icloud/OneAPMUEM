@@ -21,64 +21,70 @@
 # ENABLE_DEBUG_DSYM_UPLOAD - enable automatic upload of debug build symbols
 
 not_in_xcode_env() {
-    echo "OneAPM: $0 must be run from an XCode build"
-    exit -2
+  echo "OneAPM: $0 must be run from an XCode build"
+  exit -2
 }
 
 get_app_version() {
-    APP_VERSION=`/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$TARGET_BUILD_DIR/$INFOPLIST_PATH"`
-    APP_BUILD=`/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$TARGET_BUILD_DIR/$INFOPLIST_PATH"`
+  APP_VERSION=`/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$TARGET_BUILD_DIR/$INFOPLIST_PATH"`
+  APP_BUILD=`/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$TARGET_BUILD_DIR/$INFOPLIST_PATH"`
 }
 
 upload_dsym_archive_to_oneapm() {
-    let RETRY_LIMIT=3
-    let RETRY_COUNT=0
+  let RETRY_LIMIT=3
+  let RETRY_COUNT=0
 
-    if [ ! -f "${DSYM_ARCHIVE_PATH}" ]; then
-        echo "OneAPM: Failed to archive \"${DSYM_SRC}\" to \"${DSYM_ARCHIVE_PATH}\""
-        exit -3
+  if [ ! -f "$DSYM_ARCHIVE_PATH" ]; then
+    echo "OneAPM: Failed to archive \"$DSYM_SRC\" to \"$DSYM_ARCHIVE_PATH\""
+    exit -3
+  fi
+
+  while [ "$RETRY_COUNT" -lt "$RETRY_LIMIT" ]
+  do
+    let RETRY_COUNT=$RETRY_COUNT+1
+    echo "dSYM archive upload attempt #$RETRY_COUNT (of $RETRY_LIMIT)"
+
+    echo "curl --write-out %{http_code} --silent --output /dev/null -F dsymFile=@\"$DSYM_ARCHIVE_PATH\" -F appName=\"$EXECUTABLE_NAME\" -F appVersion=\"$APP_VERSION\" -F appBuild=\"$APP_BUILD\" -F dsymMD5=\"$DSYM_MD5\" -F dsymUUID=\"$DSYM_UUIDS\" -H \"appKey=$API_KEY\" \"$DSYM_UPLOAD_URL\""
+    SERVER_RESPONSE=$(curl --write-out %{http_code} --silent --output /dev/null -F dsymFile=@\"$DSYM_ARCHIVE_PATH\" -F appName="$EXECUTABLE_NAME" -F appVersion="$APP_VERSION" -F appBuild="$APP_BUILD" -F dsymMD5="$DSYM_MD5" -F dsymUUID="$DSYM_UUIDS" -H appKey:"$API_KEY" "$DSYM_UPLOAD_URL")
+
+    if [ $SERVER_RESPONSE -eq 200 ]; then
+      echo "OneAPM: Successfully uploaded debug symbols"
+      break
+    else
+      if [ $SERVER_RESPONSE -eq 409 ]; then
+        echo "OneAPM: dSYM \"$DSYM_UUIDS\" already uploaded"
+        break
+      else
+        echo "OneAPM: ERROR \"$SERVER_RESPONSE\" while uploading \"$DSYM_ARCHIVE_PATH\" to \"$DSYM_UPLOAD_URL\""
+      fi
     fi
+  done
 
-    while [ "$RETRY_COUNT" -lt "$RETRY_LIMIT" ]
-    do
-        let RETRY_COUNT=$RETRY_COUNT+1
-        echo "dSYM archive upload attempt #${RETRY_COUNT} (of ${RETRY_LIMIT})"
-
-        echo "curl --write-out %{http_code} --silent --output /dev/null -F dsymFile=@\"${DSYM_ARCHIVE_PATH}\" -F appName=\"$EXECUTABLE_NAME\" -F appVersion=\"${APP_VERSION}\" -F appBuild=\"${APP_BUILD}\" -F dsymMD5=\"${DSYM_MD5}\" -F dsymUUID=\"$DSYM_UUIDS\" -H \"appKey=${API_KEY}\" \"${DSYM_UPLOAD_URL}\""
-        SERVER_RESPONSE=$(curl --write-out %{http_code} --silent --output /dev/null -F dsymFile=@\"${DSYM_ARCHIVE_PATH}\" -F appName="$EXECUTABLE_NAME" -F appVersion="${APP_VERSION}" -F appBuild="${APP_BUILD}" -F dsymMD5="${DSYM_MD5}" -F dsymUUID="$DSYM_UUIDS" -H appKey:"${API_KEY}" "${DSYM_UPLOAD_URL}")
-
-        if [ $SERVER_RESPONSE -eq 200 ]; then
-            echo "OneAPM: Successfully uploaded debug symbols"
-            break
-        else
-            if [ $SERVER_RESPONSE -eq 409 ]; then
-                echo "OneAPM: dSYM \"${DSYM_UUIDS}\" already uploaded"
-                break
-            else
-                echo "OneAPM: ERROR \"${SERVER_RESPONSE}\" while uploading \"${DSYM_ARCHIVE_PATH}\" to \"${DSYM_ARCHIVE_PATH}\""
-            fi
-        fi
-    done
-
-    /bin/rm -f "${DSYM_ARCHIVE_PATH}"
+  /bin/rm -f "$DSYM_ARCHIVE_PATH"
 }
 
 if [ ! $1 ]; then
-    echo "usage: $0 <ONEAPM_APP_TOKEN>"
-    exit -1
+  echo "usage: $0 <ONEAPM_APP_TOKEN>"
+  exit -1
 fi
 
 if [ ! "$DWARF_DSYM_FOLDER_PATH" -o ! "$DWARF_DSYM_FILE_NAME" -o ! "$INFOPLIST_FILE" -o ! "$TARGET_BUILD_DIR" ]; then
-    not_in_xcode_env
+  not_in_xcode_env
 fi
 
-if [[ ! -d "${DWARF_DSYM_FOLDER_PATH}/*.dSYM" ]]; then
-    echo "OneAPM: No dSYM found"
-    exit 0
+if [ "$ENABLE_BITCODE" == "YES" ]; then
+  echo "OneAPM: Bitcode enabled. No dSYM has been uploaded."
+  exit 0
 fi
 
-if [ ! "${DSYM_UPLOAD_URL}" ]; then
-    DSYM_UPLOAD_URL="https://miv2dc.oneapm.com/mi/dc/v2/symbol_files"
+if [ ! "$DSYM_UPLOAD_URL" ]; then
+  DSYM_UPLOAD_URL="https://miv2dc.oneapm.com/mi/dc/v2/symbol_files"
+fi
+
+#Check DEBUG_INFORMATION_FORMAT
+if [ "$DEBUG_INFORMATION_FORMAT" == "dwarf" ]; then
+  echo "OneAPM: No dSYM info. No dSYM has been uploaded."
+  exit 0
 fi
 
 #save and set IFS to only trigger on \n\b
@@ -87,11 +93,11 @@ IFS=$(echo -en "\n\b")
 
 get_app_version
 
-for dSYM in `ls -d ${DWARF_DSYM_FOLDER_PATH}/*.dSYM`
+for dSYM in `ls -d $DWARF_DSYM_FOLDER_PATH/*.dSYM`
 do
   API_KEY=$1
   echo processing $dSYM
-  DSYM_SRC="${dSYM}"
+  DSYM_SRC="$dSYM"
 
   if [ "$EFFECTIVE_PLATFORM_NAME" == "-iphonesimulator" -a ! "$ENABLE_SIMULATOR_DSYM_UPLOAD" ]; then
     echo "OneAPM: Skipping automatic upload of simulator build symbols"
@@ -110,16 +116,16 @@ do
 
   # TODO: Add pid/timestamp to tmp file name
   DSYM_TIMESTAMP=`date +%s`
-  DSYM_ARCHIVE_PATH="/tmp/${DSYM_SRC##*/}-${DSYM_TIMESTAMP}.zip"
+  DSYM_ARCHIVE_PATH="/tmp/${DSYM_SRC##*/}-$DSYM_TIMESTAMP.zip"
 
   # Loop until upload success or retry limit is exceeded
 
-  echo "OneAPM: Archiving \"${DSYM_SRC}\" to \"${DSYM_ARCHIVE_PATH}\""
-  echo /usr/bin/zip --recurse-paths --quiet "${DSYM_ARCHIVE_PATH}" "${DSYM_SRC}"
-  /usr/bin/zip --recurse-paths --quiet "${DSYM_ARCHIVE_PATH}" "${DSYM_SRC}"
+  echo "OneAPM: Archiving \"$DSYM_SRC\" to \"$DSYM_ARCHIVE_PATH\""
+  echo /usr/bin/zip --recurse-paths --quiet "$DSYM_ARCHIVE_PATH" "$DSYM_SRC"
+  /usr/bin/zip --recurse-paths --quiet "$DSYM_ARCHIVE_PATH" "$DSYM_SRC"
 
-  echo "DSYM_MD5='md5 \"${DSYM_ARCHIVE_PATH}\" | awk '{print \$4}''"
-  DSYM_MD5=`md5 "${DSYM_ARCHIVE_PATH}" | awk '{print $4}'`
+  echo "DSYM_MD5='md5 \"$DSYM_ARCHIVE_PATH\" | awk '{print \$4}''"
+  DSYM_MD5=`md5 "$DSYM_ARCHIVE_PATH" | awk '{print $4}'`
 
   echo calling : upload_dsym_archive_to_oneapm
   upload_dsym_archive_to_oneapm

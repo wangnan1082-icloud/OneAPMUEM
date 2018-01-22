@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.3.0.1
+ 启动 OneAPM，当前版本 5.4.0.2
  
  @param token OneAPM 的授权码
  */
@@ -58,8 +58,19 @@
 + (void)setHost:(NSString *)host port:(int)port withSecurity:(BOOL)withSecurity;
 
 /**
+ * 设置获取地理位置信息的服务器地址
+ * @param geoURL 服务器地址
+ */
++ (void)setGeoURL:(NSString *)geoURL;
+
+/**
+ 信任 OneAPM 服务器的自签名证书（默认不信任自签名证书）
+ */
++ (void)trustAnyCertification;
+
+/**
  OneAPM 上传数据时，禁止压缩数据
  */
-+ (void)disableZlib;
++ (void)disableZlib DEPRECATED_ATTRIBUTE;
 
 @end
