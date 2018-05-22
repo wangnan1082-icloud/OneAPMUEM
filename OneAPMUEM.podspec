@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "OneAPMUEM"
-  s.version      = "5.4.0.2"
+  s.version      = "5.4.1.0"
   s.summary      = "OneAPM UEM lib for iOS."
 
   s.description  = <<-DESC
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 
   s.license      = "MIT"
 
-  s.author             = { "李赛" => "lisai@oneapm.com" }
+  s.author             = { "王文照" => "wangwenzhao@oneapm.com" }
 
   s.platform     = :ios, "7.0"
   s.requires_arc     = true
