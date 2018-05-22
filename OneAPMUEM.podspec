@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "OneAPMUEM"
-  s.version      = "5.4.1.0"
+  s.version      = "5.4.0.2"
   s.summary      = "OneAPM UEM lib for iOS."
 
   s.description  = <<-DESC
