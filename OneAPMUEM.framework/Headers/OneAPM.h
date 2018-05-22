@@ -11,13 +11,29 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.4.0.2
+ 启动 OneAPM，当前版本 5.4.1.0
  
  @param token OneAPM 的授权码
  */
 + (void)startWithApplicationToken:(NSString *)token;
 
+/**
+ 设置但不持久化 userName
+ 需要持久化 userName 时，请使用 saveUserName: 方法
+ */
 + (void)setUserName:(NSString *)userName;
+
+/**
+ 设置并持久化 userName, SDK 启动后都使用该 userName 标识当前用户
+ @param userName 需要持久化的 userName 值
+ */
++ (void)saveUserName:(NSString *)userName;
+
+/**
+ 删除本地持久化的 userName, 与 saveUserName: 配合使用
+ 例如，用户退出登录时不再使用之前持久化的 userName 作为登录用户
+ */
++ (void)deleteUserName;
 
 + (void)setSearchKey:(NSString *)searchKey;
 
@@ -64,7 +80,7 @@
 + (void)setGeoURL:(NSString *)geoURL;
 
 /**
- 信任 OneAPM 服务器的自签名证书（默认不信任自签名证书）
+ * 信任 OneAPM 服务器的自签名证书（默认不信任自签名证书）
  */
 + (void)trustAnyCertification;
 
@@ -72,5 +88,10 @@
  OneAPM 上传数据时，禁止压缩数据
  */
 + (void)disableZlib DEPRECATED_ATTRIBUTE;
+
+/**
+ * 取消与 AI 打通 (默认打通)。
+ */
++ (void)disableAssociateWithAI;
 
 @end
