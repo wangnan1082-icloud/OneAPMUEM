@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.requires_arc     = true
 
 
-  s.source       = { :git => "https://github.com/Sophia09/OneAPMUEM.git", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/wwzAwen/OneAPMUEM.git", :tag => s.version.to_s }
 
   s.vendored_framework = 'OneAPMUEM.framework'
   s.frameworks         = 'SystemConfiguration', 'CoreTelephony'
