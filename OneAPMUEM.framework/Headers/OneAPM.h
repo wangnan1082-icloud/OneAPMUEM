@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.4.1.2
+ 启动 OneAPM，当前版本 5.4.1.3
  
  @param token OneAPM 的授权码
  */
@@ -48,6 +48,13 @@
  */
 + (void)setPrintLog:(BOOL)isPrintLog;
 
+///**
+// 是否默认开启探针 默认开启
+// 如果使用此功能，请务必写在startWithApplicationToken前面 否则无效
+//
+// @param isOpen YES 开启  NO 关闭
+// */
+//+ (void)setDefaultOpenAPM:(BOOL)isOpen;
 @end
 
 
