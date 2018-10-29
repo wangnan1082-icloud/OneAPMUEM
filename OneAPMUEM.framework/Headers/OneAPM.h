@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.4.2.2
+ 启动 OneAPM，当前版本 5.4.1.0
  
  @param token OneAPM 的授权码
  */
@@ -49,12 +49,10 @@
 + (void)setPrintLog:(BOOL)isPrintLog;
 
 /**
- 是否默认开启探针 默认开启
- 如果使用此功能，请务必写在startWithApplicationToken前面 否则无效
-
- @param isOpen YES 开启  NO 关闭
+ * 取消与 AI 打通 (默认打通)。
  */
-+ (void)setDefaultOpenAPM:(BOOL)isOpen;
++ (void)DisableAssociateWithAI;
+
 @end
 
 
@@ -95,10 +93,5 @@
  OneAPM 上传数据时，禁止压缩数据
  */
 + (void)disableZlib DEPRECATED_ATTRIBUTE;
-
-/**
- * 取消与 AI 打通 (默认打通)。
- */
-+ (void)disableAssociateWithAI;
 
 @end
