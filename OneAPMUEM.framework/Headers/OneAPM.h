@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.5.0.1
+ 启动 OneAPM，当前版本 5.5.2.0
  
  @param token OneAPM 的授权码
  */
@@ -57,22 +57,10 @@
 + (void)setDefaultOpenAPM:(BOOL)isOpen;
 
 /**
- 如果您的AppDelegate中 实现了其中一个或者多个方法 请以在已实现的函数中 调用handleUrl
- - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
- - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
- - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString*, id> *)options
- 如果以上所有函数都未实现 则请实现 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation 方法并调用handleUrl
- @param url 吊起应用 （openUrl）中所传递的特定字符串
+ 手动设置应用启动完成
  */
-//+ (void)handleUrl:(NSURL *)url;
++ (void)setAppStartFinish;
 
-/**
- 是否开启ASIHTTPRequest请求框架数据收集 默认NO
- @param isOpen YES 开启  NO 关闭
- */
-+ (void)setDefaultOpenASIHTTPRequest:(BOOL)isOpen;
-
-//+ (void)testVisual;
 @end
 
 
