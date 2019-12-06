@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "OneAPMUEM"
-  s.version      = "5.5.2.0"
+  s.version      = "5.5.2.1"
   s.summary      = "OneAPM UEM lib for iOS."
 
   s.description  = <<-DESC
@@ -16,13 +16,13 @@ Pod::Spec.new do |s|
 
   s.license      = "MIT"
 
-  s.author             = { "王文照" => "wangwenzhao@oneapm.com" }
+  s.author             = { "王楠" => "wangnan@oneapm.com" }
 
   s.platform     = :ios, "7.0"
   s.requires_arc     = true
 
 
-  s.source       = { :git => "https://github.com/wwzAwen/OneAPMUEM.git", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/wangnan1082-icloud/OneAPMUEM.git", :tag => s.version.to_s }
 
   s.vendored_framework = 'OneAPMUEM.framework'
   s.frameworks         = 'SystemConfiguration', 'CoreTelephony'

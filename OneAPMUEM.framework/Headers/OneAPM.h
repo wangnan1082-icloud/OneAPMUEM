@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.5.2.0
+ 启动 OneAPM，当前版本 5.5.2.1
  
  @param token OneAPM 的授权码
  */
@@ -60,6 +60,12 @@
  手动设置应用启动完成
  */
 + (void)setAppStartFinish;
+
+/**
+ 对某个页面中的WKWebView不进行插码
+ @param vcArray 包含WKWebView的ViewController的上级页面字符串数组
+ */
++ (void)excludeWebViewController:(NSArray <NSString *>*)vcArray;
 
 @end
 
