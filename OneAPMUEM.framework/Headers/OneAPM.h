@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.5.2.3
+ 启动 OneAPM，当前版本 5.5.2.4
  
  @param token OneAPM 的授权码
  */
@@ -112,5 +112,15 @@
  * 取消与 AI 打通 (默认打通)。
  */
 + (void)disableAssociateWithAI;
+
+/**
+* RN设置页面开始加载
+*/
++ (void)onRNPageStart:(NSString *)pageName;
+
+/**
+* RN设置页面加载结束
+*/
++ (void)onRNPageEnd:(NSString *)pageName;
 
 @end
