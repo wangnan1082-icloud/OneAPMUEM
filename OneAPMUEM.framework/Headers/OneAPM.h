@@ -11,7 +11,7 @@
 @interface OneAPM : NSObject
 
 /**
- 启动 OneAPM，当前版本 5.5.2.5
+ 启动 OneAPM，当前版本 5.5.2.6
  
  @param token OneAPM 的授权码
  */
